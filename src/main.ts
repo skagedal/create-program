@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 
 import fs from 'fs/promises'
 
@@ -7,6 +6,7 @@ async function readPackageJson() {
   return JSON.parse(packageJson);
 }
 
-console.log('Greetings from create-program!');
-console.log('Reading package.json...');
-console.log(await readPackageJson());
+export async function main() {
+    console.log('Reading package.json...');
+    console.log(await readPackageJson());    
+}
