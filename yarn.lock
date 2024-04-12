@@ -10,6 +10,8 @@ __metadata:
   resolution: "create-program@workspace:."
   dependencies:
     typescript: "npm:^5.4.5"
+  bin:
+    create-program: src/index.ts
   languageName: unknown
   linkType: soft
 
