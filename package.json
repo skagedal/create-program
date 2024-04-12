@@ -1,8 +1,11 @@
 {
   "name": "create-program",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packageManager": "yarn@4.1.1",
   "main": "src/index.ts",
+  "bin": {
+    "create-program": "src/index.ts"
+  },
   "devDependencies": {
     "typescript": "^5.4.5"
   }
