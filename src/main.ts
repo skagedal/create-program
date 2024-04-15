@@ -2,7 +2,8 @@
 import fs from 'fs/promises'
 
 type ProjectPackageJson = {
-  name: string;
+  name?: string;
+  packageManager?: string;
 }
 
 async function readPackageJson(): Promise<ProjectPackageJson | undefined> {
@@ -22,7 +23,7 @@ export async function main() {
     console.log('Reading package.json...');
     const packageJson = await readPackageJson();
     if (packageJson !== undefined) {
-      console.log('Package name:', packageJson?.name);
+      console.log('Package name:', packageJson.name);
     } else {
       console.log('No package.json found');
     }
