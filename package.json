@@ -7,6 +7,10 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^20.12.7",
+    "jest": "^29.7.0",
     "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "test": "jest"
   }
 }
