@@ -21,7 +21,7 @@ __metadata:
     "@types/node": "npm:^20.12.7"
     typescript: "npm:^5.4.5"
   bin:
-    create-program: src/index.ts
+    create-program: bin/index.mjs
   languageName: unknown
   linkType: soft
 
