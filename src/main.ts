@@ -1,14 +1,15 @@
 
 import fs from 'fs/promises'
+import { join } from 'node:path';
 
 type ProjectPackageJson = {
   name?: string;
   packageManager?: string;
 }
 
-async function readPackageJson(): Promise<ProjectPackageJson | undefined> {
+async function readPackageJson(path: string): Promise<ProjectPackageJson | undefined> {
   try {
-    const packageJson = await fs.readFile('package.json', 'utf8');
+    const packageJson = await fs.readFile(join(path, 'package.json'), 'utf8');
     return JSON.parse(packageJson) as ProjectPackageJson;
   } catch (error: any) {
     if (error.code === 'ENOENT') {
@@ -19,12 +20,18 @@ async function readPackageJson(): Promise<ProjectPackageJson | undefined> {
   }
 }
 
+async function writePackageJson(path: string, packageJson: ProjectPackageJson) {
+  await fs.writeFile(join(path, 'package.json'), JSON.stringify(packageJson, null, 2));
+}
+
+export async function runCreateProgram(path: string) {
+  const packageJson = await readPackageJson(path) ?? {
+    name: 'hello-world',
+    packageManager: 'yarn@4.1.1',
+  };
+  await writePackageJson(path, packageJson);
+}
+
 export async function main() {
-    console.log('Reading package.json...');
-    const packageJson = await readPackageJson();
-    if (packageJson !== undefined) {
-      console.log('Package name:', packageJson.name);
-    } else {
-      console.log('No package.json found');
-    }
+  await runCreateProgram('.');
 }
