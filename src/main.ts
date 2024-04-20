@@ -25,9 +25,11 @@ async function writePackageJson(path: string, packageJson: ProjectPackageJson) {
 }
 
 export async function runCreateProgram(path: string) {
-  const packageJson = await readPackageJson(path) ?? {
+  const originalPackageJson = await readPackageJson(path);
+  const packageJson = {
     name: 'hello-world',
     packageManager: 'yarn@4.1.1',
+    ...originalPackageJson,
   };
   await writePackageJson(path, packageJson);
 }

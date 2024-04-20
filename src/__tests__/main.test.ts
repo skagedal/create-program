@@ -18,13 +18,23 @@ async function readPackageJson(dir: string) {
 }
 
 describe('main', () => {
-    it('should write package name to package.json', async () => {
+    it('should write package name to package.json when no package.json', async () => {
         const dir = await initFixture('no-package-json');
         
         await runCreateProgram(dir);
         
         const packageJson = await readPackageJson(dir);
         expect(packageJson.name).toBe('hello-world');
+    });
+
+    it('should write package name to package.json when package.json exists but has no name', async () => {
+        const dir = await initFixture('has-no-name');
+
+        await runCreateProgram(dir);
+
+        const packageJson = await readPackageJson(dir);
+        expect(packageJson.name).toBe('hello-world');
+        expect(packageJson.dummy).toBe('retained-value');
     });
 
     it('should not overwrite existing name in package.json', async () => {
