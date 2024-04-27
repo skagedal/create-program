@@ -24,14 +24,22 @@ async function writePackageJson(path: string, packageJson: ProjectPackageJson) {
   await fs.writeFile(join(path, 'package.json'), JSON.stringify(packageJson, null, 2));
 }
 
+async function writeMain(path: string) {
+  await fs.mkdir(join(path, 'bin'), { recursive: true });
+  await fs.writeFile(join(path, 'bin', 'index.mjs'), 'console.log("Hello, world!")\n');
+}
+
 export async function runCreateProgram(path: string) {
   const originalPackageJson = await readPackageJson(path);
   const packageJson = {
     name: 'hello-world',
     packageManager: 'yarn@4.1.1',
+    bin: 'bin/index.mjs',
+    main: 'bin/index.mjs',
     ...originalPackageJson,
   };
   await writePackageJson(path, packageJson);
+  await writeMain(path);
 }
 
 export async function main() {

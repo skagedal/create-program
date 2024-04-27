@@ -45,5 +45,33 @@ describe('main', () => {
         const packageJson = await readPackageJson(dir);
         expect(packageJson.name).toBe('existing-name');
     });
+
+    it('should create bin/index.mjs', async () => {
+        const dir = await initFixture('has-no-name');
+
+        await runCreateProgram(dir);
+
+        const indexMjs = await fs.readFile(join(dir, 'bin', 'index.mjs'), 'utf8');
+        expect(indexMjs).toMatch(/.*/);
+    });
+
+    it('should add a main entry to package.json', async () => {
+        const dir = await initFixture('has-no-name');
+
+        await runCreateProgram(dir);
+
+        const packageJson = await readPackageJson(dir);
+        expect(packageJson.main).toBe('bin/index.mjs');
+    });
+
+    it('should add a bin entry to package.json', async () => {
+        const dir = await initFixture('has-no-name');
+
+        await runCreateProgram(dir);
+
+        const packageJson = await readPackageJson(dir);
+        expect(packageJson.bin).toBe('bin/index.mjs');
+    });
+
 });
 
