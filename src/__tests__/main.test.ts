@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import * as path from 'path';
 import { runCreateProgram } from '../main';
+import exp from 'node:constants';
 
 const resolveFromFixture = (relativePath: string) =>
     path.resolve(__dirname, '__fixtures__', relativePath);
@@ -55,23 +56,21 @@ describe('main', () => {
         expect(indexMjs).toMatch(/.*/);
     });
 
-    it('should add a main entry to package.json', async () => {
+    it('should add relevant things to package.json', async () => {
         const dir = await initFixture('has-no-name');
 
         await runCreateProgram(dir);
 
         const packageJson = await readPackageJson(dir);
         expect(packageJson.main).toBe('bin/index.mjs');
-    });
-
-    it('should add a bin entry to package.json', async () => {
-        const dir = await initFixture('has-no-name');
-
-        await runCreateProgram(dir);
-
-        const packageJson = await readPackageJson(dir);
         expect(packageJson.bin).toBe('bin/index.mjs');
+        expect(packageJson.type).toBe('module');
+        expect(Object.keys(packageJson.devDependencies)).toContain('typescript');
+        expect(Object.keys(packageJson.devDependencies)).toContain('jest');
+        expect(Object.keys(packageJson.devDependencies)).toContain('ts-jest');
+        expect(Object.keys(packageJson.devDependencies)).toContain('@types/node');
+        expect(Object.keys(packageJson.devDependencies)).toContain('@types/jest');
+        expect(packageJson.scripts.test).toBe('jest');
     });
-
 });
 

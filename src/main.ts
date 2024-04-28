@@ -36,6 +36,17 @@ export async function runCreateProgram(path: string) {
     packageManager: 'yarn@4.1.1',
     bin: 'bin/index.mjs',
     main: 'bin/index.mjs',
+    type: 'module',
+    devDependencies: {
+      '@types/jest': '^29.5.12',
+      '@types/node': '^20.12.7',
+      'jest': '^29.7.0',
+      'ts-jest': '^29.1.2',
+      'typescript': '^5.4.5'
+    },
+    scripts: {
+      test: 'jest'
+    },
     ...originalPackageJson,
   };
   await writePackageJson(path, packageJson);
