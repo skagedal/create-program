@@ -769,6 +769,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsconfig/node21@npm:^21.0.3":
+  version: 21.0.3
+  resolution: "@tsconfig/node21@npm:21.0.3"
+  checksum: 10c0/d6d497b0a2f03d3bed2e4467943426cd357600454e0498823a7242531d9d90945a762bf9eb062fffcc17354bcc78e1d03677d85cb8e3df6a1267589885c93cf0
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.1.14":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
@@ -1332,6 +1339,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-program@workspace:."
   dependencies:
+    "@tsconfig/node21": "npm:^21.0.3"
     "@types/jest": "npm:^29.5.12"
     "@types/node": "npm:^20.12.7"
     jest: "npm:^29.7.0"
