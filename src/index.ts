@@ -51,6 +51,7 @@ export async function runCreateProgram(path: string) {
   };
   await writePackageJson(path, packageJson);
   await writeMain(path);
+  console.log('Created program');
 }
 
 export async function main() {
