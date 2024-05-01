@@ -1,11 +1,11 @@
 {
-    "compilerOptions": {
-        "rootDir": "src",
-        "outDir": "dist",
-        "target": "es2022",
-        "strict": true,
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-    },
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": [
+    "@tsconfig/node21/tsconfig.json",
+    "@tsconfig/strictest/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src"
+  }
 }

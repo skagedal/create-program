@@ -2,8 +2,7 @@ import fs from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import * as path from 'path';
-import { runCreateProgram } from '../main';
-import exp from 'node:constants';
+import { runCreateProgram } from '../index.js';
 
 const resolveFromFixture = (relativePath: string) =>
     path.resolve(__dirname, '__fixtures__', relativePath);
