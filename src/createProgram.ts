@@ -1,5 +1,5 @@
-import fs from 'fs/promises'
-import paths from 'node:path';
+import * as fs from 'fs/promises'
+import * as paths from 'node:path';
 
 type ProjectPackageJson = {
   name?: string;

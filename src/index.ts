@@ -1,4 +1,4 @@
-import c from 'cmd-ts';
+import * as c from 'cmd-ts';
 import { runCreateProgram } from './createProgram.js';
 
 async function mainAsync() {
