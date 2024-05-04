@@ -7,8 +7,11 @@ import { runCreateProgram } from '../src/index.js';
 const resolveFromFixture = (relativePath: string) =>
     path.resolve(__dirname, '__fixtures__', relativePath);
 
+const createTempDir = async () => await fs.mkdtemp(join(tmpdir(), 'test-'));
+
 const initFixture = async (fixtureName: string) => {
-    const tmpDir = await fs.mkdtemp(join(tmpdir(), 'test-'));
+    const tmpDir = path.resolve(await createTempDir(), fixtureName);
+    await fs.mkdir(tmpDir);
     await fs.cp(resolveFromFixture(fixtureName), tmpDir, { recursive: true });
     return tmpDir;
 }
@@ -18,13 +21,22 @@ async function readPackageJson(dir: string) {
 }
 
 describe('main', () => {
+    it('should create the directory if it does not exist', async () => {
+        const dir = path.resolve(await createTempDir(), 'one', 'two', 'three');
+        
+        await runCreateProgram(dir);
+        
+        const packageJson = await readPackageJson(dir);
+        expect(packageJson.name).toBe('three');
+    });
+
     it('should write package name to package.json when no package.json', async () => {
         const dir = await initFixture('no-package-json');
         
         await runCreateProgram(dir);
         
         const packageJson = await readPackageJson(dir);
-        expect(packageJson.name).toBe('hello-world');
+        expect(packageJson.name).toBe('no-package-json');
     });
 
     it('should write package name to package.json when package.json exists but has no name', async () => {
@@ -33,7 +45,7 @@ describe('main', () => {
         await runCreateProgram(dir);
 
         const packageJson = await readPackageJson(dir);
-        expect(packageJson.name).toBe('hello-world');
+        expect(packageJson.name).toBe('has-no-name');
         expect(packageJson.dummy).toBe('retained-value');
     });
 
