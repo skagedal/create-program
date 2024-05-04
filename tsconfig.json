@@ -5,6 +5,8 @@
   ],
   "compilerOptions": {
     "outDir": "build",
-    "rootDir": "src"
-  }
+    "rootDir": ".",
+    "sourceMap": true
+  },
+  "include": ["src/**/*", "__tests__/**/*"]
 }

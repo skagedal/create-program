@@ -15,7 +15,7 @@
     "typescript": "^5.4.5"
   },
   "scripts": {
-    "test": "jest",
-    "prepare": "tsc"
+    "test": "jest --coverage",
+    "build": "tsc -p tsconfig.json"
   }
 }
