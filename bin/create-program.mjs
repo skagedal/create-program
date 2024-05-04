@@ -1,4 +1,3 @@
 #!/usr/bin/env node
-import { main } from '../build/index.js'
-await main();
-
+import { main } from '../build/src/index.js'
+main();
