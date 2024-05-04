@@ -20,3 +20,4 @@ for how to set up a TypeScript project.
 - [node-typescript-boilerplate](https://github.com/jsynowiec/node-typescript-boilerplate) - this one is the nicest I've found
 - [Using TypeScript Node.js with native ESM](https://gist.github.com/slavafomin/cd7a54035eff5dc1c7c2eff096b23b6b)
 - [typescript-cli-starter](https://github.com/khalidx/typescript-cli-starter)
+- Other links [here](https://github.com/dzharii/awesome-typescript?tab=readme-ov-file#typescript-project-starters)
