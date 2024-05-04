@@ -6,7 +6,8 @@
   "compilerOptions": {
     "outDir": "build",
     "rootDir": ".",
-    "sourceMap": true
+    "sourceMap": true,
+    "esModuleInterop": true
   },
   "include": ["src/**/*", "__tests__/**/*"]
 }
