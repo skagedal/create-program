@@ -23,9 +23,42 @@ async function writePackageJson(path: string, packageJson: ProjectPackageJson) {
   await fs.writeFile(paths.join(path, 'package.json'), JSON.stringify(packageJson, null, 2));
 }
 
-async function writeMain(path: string) {
+async function writeBin(path: string, packageName: string) {
   await fs.mkdir(paths.join(path, 'bin'), { recursive: true });
-  await fs.writeFile(paths.join(path, 'bin', 'index.mjs'), 'console.log("Hello, world!")\n');
+  await fs.writeFile(paths.join(path, 'bin', `${packageName}.mjs`),
+`#!/usr/bin/env node
+
+import { main } from '../build/src/index.js'
+  
+main();
+`);
+}
+
+async function writeSourceFiles(path: string) {
+  const src = paths.join(path, 'src');
+  await fs.mkdir(src);
+
+  await fs.writeFile(paths.join(src, 'greet.ts'),
+`export interface Greetable {
+  name: string
+}
+
+export function greet(greetable: Greetable) {
+  return \`Hello, \${greetable.name}!\`
+}
+`);
+  
+  await fs.writeFile(paths.join(src, 'index.ts'), 
+`import { greet } from './greet.js';
+
+export function main() {
+  console.log(greet({ name: 'world' }));
+}
+`)
+}
+
+async function writeTsConfig(path: string) {
+  
 }
 
 export async function runCreateProgram(path: string) {
@@ -34,11 +67,11 @@ export async function runCreateProgram(path: string) {
   const originalPackageJson = await readPackageJson(path);
   const packageJson = {
     name: packageName,
-    packageManager: 'yarn@4.1.1',
-    bin: 'bin/index.mjs',
-    main: 'bin/index.mjs',
+    bin: `bin/${packageName}.mjs`,
+    main: 'build/index.js',
     type: 'module',
     devDependencies: {
+      '@tsconfig/node21': '^21.0.3',
       '@types/jest': '^29.5.12',
       '@types/node': '^20.12.7',
       'jest': '^29.7.0',
@@ -46,10 +79,12 @@ export async function runCreateProgram(path: string) {
       'typescript': '^5.4.5'
     },
     scripts: {
-      test: 'jest'
+      test: 'jest --coverage',
+      build: 'tsc -p tsconfig.json',
     },
     ...originalPackageJson,
   };
   await writePackageJson(path, packageJson);
-  await writeMain(path);
+  await writeSourceFiles(path);
+  await writeBin(path, packageName);
 }
