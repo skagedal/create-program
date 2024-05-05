@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises'
 import * as paths from 'node:path';
+import * as templateFiles from './templateFiles.js';
 
 type ProjectPackageJson = {
   name?: string;
@@ -23,42 +24,23 @@ async function writePackageJson(path: string, packageJson: ProjectPackageJson) {
   await fs.writeFile(paths.join(path, 'package.json'), JSON.stringify(packageJson, null, 2));
 }
 
+async function writeOtherConfigFiles(path: string) {
+  await fs.writeFile(paths.join(path, 'tsconfig.json'), templateFiles.tsConfig);
+  await fs.writeFile(paths.join(path, 'tsconfig.release.json'), templateFiles.tsConfigRelease);
+  await fs.writeFile(paths.join(path, 'jest.config.mjs'), templateFiles.jestConfig);
+}
+
 async function writeBin(path: string, packageName: string) {
   await fs.mkdir(paths.join(path, 'bin'), { recursive: true });
-  await fs.writeFile(paths.join(path, 'bin', `${packageName}.mjs`),
-`#!/usr/bin/env node
-
-import { main } from '../build/src/index.js'
-  
-main();
-`);
+  await fs.writeFile(paths.join(path, 'bin', `${packageName}.mjs`), templateFiles.binRunner);
 }
 
 async function writeSourceFiles(path: string) {
   const src = paths.join(path, 'src');
   await fs.mkdir(src);
 
-  await fs.writeFile(paths.join(src, 'greet.ts'),
-`export interface Greetable {
-  name: string
-}
-
-export function greet(greetable: Greetable) {
-  return \`Hello, \${greetable.name}!\`
-}
-`);
-  
-  await fs.writeFile(paths.join(src, 'index.ts'), 
-`import { greet } from './greet.js';
-
-export function main() {
-  console.log(greet({ name: 'world' }));
-}
-`)
-}
-
-async function writeTsConfig(path: string) {
-  
+  await fs.writeFile(paths.join(src, 'greet.ts'), templateFiles.greetTs);
+  await fs.writeFile(paths.join(src, 'index.ts'), templateFiles.indexTs);
 }
 
 export async function runCreateProgram(path: string) {
@@ -86,5 +68,6 @@ export async function runCreateProgram(path: string) {
   };
   await writePackageJson(path, packageJson);
   await writeSourceFiles(path);
+  await writeOtherConfigFiles(path);
   await writeBin(path, packageName);
 }

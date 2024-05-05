@@ -58,14 +58,14 @@ describe('main', () => {
     expect(packageJson.name).toBe('existing-name');
   });
   
-  it('should create bin/index.mjs', async () => {
+  it('should create bin/has-no-name.mjs', async () => {
     const dir = await initFixture('has-no-name');
     
     await runCreateProgram(dir);
     
-    const indexMjs = await fs.readFile(join(dir, 'bin', 'index.mjs'), 'utf8');
-  expect(indexMjs).toMatch(/.*/);
-});
+    const indexMjs = await fs.readFile(join(dir, 'bin', 'has-no-name.mjs'), 'utf8');
+    expect(indexMjs).toMatch(/.*/);
+  });
 
 it('should add relevant things to package.json', async () => {
   const dir = await initFixture('has-no-name');
@@ -73,15 +73,15 @@ it('should add relevant things to package.json', async () => {
   await runCreateProgram(dir);
   
   const packageJson = await readPackageJson(dir);
-  expect(packageJson.main).toBe('bin/index.mjs');
-  expect(packageJson.bin).toBe('bin/index.mjs');
+  expect(packageJson.main).toBe('build/index.js');
+  expect(packageJson.bin).toBe('bin/has-no-name.mjs');
   expect(packageJson.type).toBe('module');
   expect(Object.keys(packageJson.devDependencies)).toContain('typescript');
   expect(Object.keys(packageJson.devDependencies)).toContain('jest');
   expect(Object.keys(packageJson.devDependencies)).toContain('ts-jest');
   expect(Object.keys(packageJson.devDependencies)).toContain('@types/node');
   expect(Object.keys(packageJson.devDependencies)).toContain('@types/jest');
-  expect(packageJson.scripts.test).toBe('jest');
+  expect(packageJson.scripts.test).toBe('jest --coverage');
 });
 });
 
