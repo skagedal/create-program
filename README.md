@@ -21,3 +21,5 @@ for how to set up a TypeScript project.
 - [Using TypeScript Node.js with native ESM](https://gist.github.com/slavafomin/cd7a54035eff5dc1c7c2eff096b23b6b)
 - [typescript-cli-starter](https://github.com/khalidx/typescript-cli-starter)
 - Other links [here](https://github.com/dzharii/awesome-typescript?tab=readme-ov-file#typescript-project-starters)
+- [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html)
+- [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)
