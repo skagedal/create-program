@@ -8,7 +8,9 @@ async function mainAsync() {
     args: {
       path: c.option({
         long: 'path',
-        type: c.string
+        type: c.string,
+        defaultValue: () => '.',
+        defaultValueIsSerializable: true,
       })
     },
     handler: async (args) => {
