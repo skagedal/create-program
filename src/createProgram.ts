@@ -2,6 +2,11 @@ import * as fs from 'fs/promises'
 import * as paths from 'node:path';
 import * as templateFiles from './templateFiles.js';
 
+export interface CreateProgramOptions {
+  path: string;
+  name?: string;
+}
+
 type ProjectPackageJson = {
   name?: string;
   packageManager?: string;
@@ -43,9 +48,9 @@ async function writeSourceFiles(path: string) {
   await fs.writeFile(paths.join(src, 'index.ts'), templateFiles.indexTs);
 }
 
-export async function runCreateProgram(path: string) {
+export async function runCreateProgram({path, name }: CreateProgramOptions) {
   await fs.mkdir(path, { recursive: true });
-  const packageName = paths.basename(paths.resolve(path));
+  const packageName = name ?? paths.basename(paths.resolve(path));
   const originalPackageJson = await readPackageJson(path);
   const packageJson = {
     name: packageName,
