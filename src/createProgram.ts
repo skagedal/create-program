@@ -43,7 +43,7 @@ async function writeBin(path: string, packageName: string) {
 
 async function writeSourceFiles(path: string) {
   const src = paths.join(path, 'src');
-  await fs.mkdir(src);
+  await fs.mkdir(src, { recursive: true });
 
   await fs.writeFile(paths.join(src, 'greet.ts'), templateFiles.greetTs);
   await fs.writeFile(paths.join(src, 'index.ts'), templateFiles.indexTs);
