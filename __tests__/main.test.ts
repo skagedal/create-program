@@ -24,7 +24,7 @@ describe('main', () => {
   it('should create the directory if it does not exist', async () => {
     const path = paths.resolve(await createTempDir(), 'one', 'two', 'three');
     
-    await runCreateProgram({path});
+    await runCreateProgram({path, quiet: true});
     
     const packageJson = await readPackageJson(path);
     expect(packageJson.name).toBe('three');
@@ -33,7 +33,7 @@ describe('main', () => {
   it('should write package name to package.json when no package.json', async () => {
     const path = await initFixture('no-package-json');
     
-    await runCreateProgram({path});
+    await runCreateProgram({path, quiet: true});
     
     const packageJson = await readPackageJson(path);
     expect(packageJson.name).toBe('no-package-json');
@@ -42,7 +42,7 @@ describe('main', () => {
   it('should write package name to package.json when package.json exists but has no name', async () => {
     const path = await initFixture('has-no-name');
     
-    await runCreateProgram({path});
+    await runCreateProgram({path, quiet: true});
     
     const packageJson = await readPackageJson(path);
     expect(packageJson.name).toBe('has-no-name');
@@ -52,7 +52,7 @@ describe('main', () => {
   it('should not overwrite existing name in package.json', async () => {
     const path = await initFixture('has-only-name');
     
-    await runCreateProgram({path});
+    await runCreateProgram({path, quiet: true});
     
     const packageJson = await readPackageJson(path);
     expect(packageJson.name).toBe('existing-name');
@@ -61,27 +61,27 @@ describe('main', () => {
   it('should create bin/has-no-name.mjs', async () => {
     const path = await initFixture('has-no-name');
     
-    await runCreateProgram({path});
+    await runCreateProgram({path, quiet: true});
     
     const indexMjs = await fs.readFile(join(path, 'bin', 'has-no-name.mjs'), 'utf8');
     expect(indexMjs).toMatch(/.*/);
   });
 
-it('should add relevant things to package.json', async () => {
-  const path = await initFixture('has-no-name');
-  
-  await runCreateProgram({path});
-  
-  const packageJson = await readPackageJson(path);
-  expect(packageJson.main).toBe('build/index.js');
-  expect(packageJson.bin).toBe('bin/has-no-name.mjs');
-  expect(packageJson.type).toBe('module');
-  expect(Object.keys(packageJson.devDependencies)).toContain('typescript');
-  expect(Object.keys(packageJson.devDependencies)).toContain('jest');
-  expect(Object.keys(packageJson.devDependencies)).toContain('ts-jest');
-  expect(Object.keys(packageJson.devDependencies)).toContain('@types/node');
-  expect(Object.keys(packageJson.devDependencies)).toContain('@types/jest');
-  expect(packageJson.scripts.test).toBe('jest --coverage');
-});
+  it('should add relevant things to package.json', async () => {
+    const path = await initFixture('has-no-name');
+    
+    await runCreateProgram({path, quiet: true});
+    
+    const packageJson = await readPackageJson(path);
+    expect(packageJson.main).toBe('build/index.js');
+    expect(packageJson.bin).toBe('bin/has-no-name.mjs');
+    expect(packageJson.type).toBe('module');
+    expect(Object.keys(packageJson.devDependencies)).toContain('typescript');
+    expect(Object.keys(packageJson.devDependencies)).toContain('jest');
+    expect(Object.keys(packageJson.devDependencies)).toContain('ts-jest');
+    expect(Object.keys(packageJson.devDependencies)).toContain('@types/node');
+    expect(Object.keys(packageJson.devDependencies)).toContain('@types/jest');
+    expect(packageJson.scripts.test).toBe('jest --coverage');
+  });
 });
 

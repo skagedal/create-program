@@ -18,6 +18,12 @@ async function mainAsync() {
         description: 'the name of the program',
         type: c.optional(c.string),
       }),
+      quiet: c.flag({
+        long: 'quiet',
+        description: 'suppress output',
+        defaultValue: () => false,
+        defaultValueIsSerializable: true,
+      }),
     },
     handler: async (args) => {
       await runCreateProgram(args);
