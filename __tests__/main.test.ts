@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import * as paths from 'path';
 import { runCreateProgram } from '../src/createProgram.js';
+import exp from 'node:constants';
 
 const resolveFromFixture = (relativePath: string) =>
   paths.resolve(__dirname, '__fixtures__', relativePath);
@@ -82,6 +83,12 @@ describe('main', () => {
     expect(Object.keys(packageJson.devDependencies)).toContain('@types/node');
     expect(Object.keys(packageJson.devDependencies)).toContain('@types/jest');
     expect(packageJson.scripts.test).toBe('jest --coverage');
+  });
+
+  it('should be fine when things already exist', async () => {
+    const path = await initFixture('has-all-the-things');
+    
+    await runCreateProgram({path, quiet: true});
   });
 });
 
