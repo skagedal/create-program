@@ -5,6 +5,7 @@ import * as templateFiles from './templateFiles.js';
 export interface CreateProgramOptions {
   path: string;
   name?: string;
+  quiet: boolean;
 }
 
 type ProjectPackageJson = {
@@ -48,7 +49,7 @@ async function writeSourceFiles(path: string) {
   await fs.writeFile(paths.join(src, 'index.ts'), templateFiles.indexTs);
 }
 
-export async function runCreateProgram({path, name }: CreateProgramOptions) {
+export async function runCreateProgram({path, name, quiet }: CreateProgramOptions) {
   await fs.mkdir(path, { recursive: true });
   const packageName = name ?? paths.basename(paths.resolve(path));
   const originalPackageJson = await readPackageJson(path);
@@ -75,4 +76,16 @@ export async function runCreateProgram({path, name }: CreateProgramOptions) {
   await writeSourceFiles(path);
   await writeOtherConfigFiles(path);
   await writeBin(path, packageName);
+  if (!quiet) {
+    if (path === '.') {
+      console.log('Program created, now run:');
+    }
+    if (path !== '.') {
+      console.log(`Program created in ${path}, go there and run:`);
+    }
+    console.log('');
+    console.log('   npm install');
+    console.log('   npm run build');
+    console.log(`   npm exec ${packageName}`);
+  }
 }
