@@ -9,11 +9,13 @@ async function mainAsync() {
       path: c.option({
         long: 'path',
         type: c.string,
+        description: 'the path to the directory where the program will be created',
         defaultValue: () => '.',
         defaultValueIsSerializable: true,
       }),
       name: c.option({
         long: 'name',
+        description: 'the name of the program',
         type: c.optional(c.string),
       }),
     },
