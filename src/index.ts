@@ -11,10 +11,14 @@ async function mainAsync() {
         type: c.string,
         defaultValue: () => '.',
         defaultValueIsSerializable: true,
-      })
+      }),
+      name: c.option({
+        long: 'name',
+        type: c.optional(c.string),
+      }),
     },
     handler: async (args) => {
-      await runCreateProgram(args.path);
+      await runCreateProgram(args);
     }
   })
   
