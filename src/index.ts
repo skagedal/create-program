@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Handles CLI parsing and execution.
+ */
+
 import * as c from 'cmd-ts';
 import { runCreateProgram } from './createProgram.js';
 

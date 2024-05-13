@@ -1,6 +1,11 @@
+/**
+ * @fileoverview Holds the main program creating functionality.
+ */
+
 import * as fs from 'fs/promises'
 import * as paths from 'node:path';
 import * as templateFiles from './templateFiles.js';
+import { readLinesFromFile, writeLinesToFile } from './fileProcessing.js';
 
 export interface CreateProgramOptions {
   path: string;
@@ -28,6 +33,14 @@ async function readPackageJson(path: string): Promise<ProjectPackageJson | undef
 
 async function writePackageJson(path: string, packageJson: ProjectPackageJson) {
   await fs.writeFile(paths.join(path, 'package.json'), JSON.stringify(packageJson, null, 2));
+}
+
+async function modifyGitIgnore(path: string): Promise<void> {
+  const gitIgnorePath = paths.join(path, '.gitignore');
+  const lines = await readLinesFromFile(gitIgnorePath);
+  if (lines.some((line) => line.match(/^\w*node_modules\/?\w*$/)))
+    return;
+  await writeLinesToFile(gitIgnorePath, [...lines, 'node_modules/']);
 }
 
 async function writeOtherConfigFiles(path: string) {
@@ -74,6 +87,7 @@ export async function runCreateProgram({path, name, quiet }: CreateProgramOption
   };
   await writePackageJson(path, packageJson);
   await writeSourceFiles(path);
+  await modifyGitIgnore(path);
   await writeOtherConfigFiles(path);
   await writeBin(path, packageName);
   if (!quiet) {
