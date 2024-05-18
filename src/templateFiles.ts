@@ -20,12 +20,27 @@ export function main() {
 
 export const greetTs =
 `export interface Greetable {
-  name: string
+  name: string;
+  isBirthday?: boolean;
 }
 
 export function greet(greetable: Greetable) {
   return \`Hello, \${greetable.name}!\`
 }
+`;
+
+export const greetTestTs = 
+`import { greet } from "./greet.js";
+
+describe('greeting', () => {
+  it('should greet with name', () => {
+    expect(greet({ name: 'world' })).toBe('Hello, world!');
+  });
+
+  it('should handle birthday greetings', () => {
+    expect(greet({ name: 'world', isBirthday: true })).toBe('Happy birthday, world!');
+  });
+});
 `;
 
 export const tsConfig =
@@ -39,7 +54,7 @@ export const tsConfig =
     "rootDir": ".",
     "sourceMap": true
   },
-  "include": ["src/**/*", "__tests__/**/*"]
+  "include": ["src/**/*", "tests/**/*"]
 }
 `;
 
@@ -66,7 +81,7 @@ const config = {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.(m)?js$': '$1',
   },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(m)?ts$',
+  testRegex: '(/tests/.*|(\\.|/)(test|spec))\\.(m)?ts$',
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     'src/**/*.ts',

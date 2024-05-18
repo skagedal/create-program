@@ -59,6 +59,7 @@ async function writeSourceFiles(path: string) {
   await fs.mkdir(src, { recursive: true });
 
   await fs.writeFile(paths.join(src, 'greet.ts'), templateFiles.greetTs);
+  await fs.writeFile(paths.join(src, 'greet.test.ts'), templateFiles.greetTestTs);
   await fs.writeFile(paths.join(src, 'index.ts'), templateFiles.indexTs);
 }
 
@@ -80,7 +81,7 @@ export async function runCreateProgram({path, name, quiet }: CreateProgramOption
       'typescript': '^5.4.5'
     },
     scripts: {
-      test: 'jest --coverage',
+      test: 'jest',
       build: 'tsc -p tsconfig.json',
     },
     ...originalPackageJson,
