@@ -9,8 +9,10 @@ This is a scaffolding tool to create a simple [Node.js](https://nodejs.org/en) p
 Create a directory for your project and run the following command in it:
 
 ```bash
-npm create program
+npm create program@latest
 ```
+
+Using `@latest` ensures that you get the latest version of the tool published on `npm`; otherwise `npm` may use whatever version it finds locally; which you may be fine with. I am skipping `@latest` in the following examples for brevity.
 
 You can also specify the directory where it will be created.
 
