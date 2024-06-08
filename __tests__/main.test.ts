@@ -82,7 +82,7 @@ describe('main', () => {
     expect(Object.keys(packageJson.devDependencies)).toContain('ts-jest');
     expect(Object.keys(packageJson.devDependencies)).toContain('@types/node');
     expect(Object.keys(packageJson.devDependencies)).toContain('@types/jest');
-    expect(packageJson.scripts.test).toBe('jest --coverage');
+    expect(packageJson.scripts.test).toBe('jest');
   });
 
   it('should be fine when things already exist', async () => {
