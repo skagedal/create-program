@@ -1,5 +1,5 @@
 /**
- * @fileoverview Includes the contents of various fiels included in the created program.
+ * @fileoverview Includes the contents of various files included in the created program.
  */
 
 export const binRunner = 
