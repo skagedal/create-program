@@ -73,12 +73,12 @@ export async function runCreateProgram({path, name, quiet }: CreateProgramOption
     main: 'build/index.js',
     type: 'module',
     devDependencies: {
-      '@tsconfig/node21': '^21.0.3',
-      '@types/jest': '^29.5.12',
-      '@types/node': '^20.12.12',
-      'jest': '^29.7.0',
-      'ts-jest': '^29.1.2',
-      'typescript': '^5.4.5'
+      '@tsconfig/node24': 'latest',
+      '@types/jest': 'latest',
+      '@types/node': 'latest',
+      'jest': 'latest',
+      'ts-jest': 'latest',
+      'typescript': 'latest'
     },
     scripts: {
       test: 'jest',
