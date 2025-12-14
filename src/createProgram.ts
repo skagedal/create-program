@@ -7,9 +7,12 @@ import * as paths from 'node:path';
 import * as templateFiles from './templateFiles.js';
 import { readLinesFromFile, writeLinesToFile } from './fileProcessing.js';
 
+export type TestRunner = 'jest' | 'nodejs';
+
 export interface CreateProgramOptions {
   path: string;
   name?: string;
+  testRunner: TestRunner;
   quiet: boolean;
 }
 
@@ -43,10 +46,12 @@ async function modifyGitIgnore(path: string): Promise<void> {
   await writeLinesToFile(gitIgnorePath, [...lines, 'node_modules/']);
 }
 
-async function writeOtherConfigFiles(path: string) {
+async function writeOtherConfigFiles(path: string, testRunner: TestRunner) {
   await fs.writeFile(paths.join(path, 'tsconfig.json'), templateFiles.tsConfig);
   await fs.writeFile(paths.join(path, 'tsconfig.release.json'), templateFiles.tsConfigRelease);
-  await fs.writeFile(paths.join(path, 'jest.config.mjs'), templateFiles.jestConfig);
+  if (testRunner === 'jest') {
+    await fs.writeFile(paths.join(path, 'jest.config.mjs'), templateFiles.jestConfig);
+  }
 }
 
 async function writeBin(path: string, packageName: string) {
@@ -54,42 +59,56 @@ async function writeBin(path: string, packageName: string) {
   await fs.writeFile(paths.join(path, 'bin', `${packageName}.mjs`), templateFiles.binRunner);
 }
 
-async function writeSourceFiles(path: string) {
+async function writeSourceFiles(path: string, testRunner: TestRunner) {
   const src = paths.join(path, 'src');
   await fs.mkdir(src, { recursive: true });
 
   await fs.writeFile(paths.join(src, 'greet.ts'), templateFiles.greetTs);
-  await fs.writeFile(paths.join(src, 'greet.test.ts'), templateFiles.greetTestTs);
-  await fs.writeFile(paths.join(src, 'index.ts'), templateFiles.indexTs);
+  const testTemplate = testRunner === 'jest' ? templateFiles.greetTestTsJest : templateFiles.greetTestTsNodejs;
+  await fs.writeFile(paths.join(src, 'greet.test.ts'), testTemplate);
+  const indexTemplate = testRunner === 'jest' ? templateFiles.indexTsJest : templateFiles.indexTsNodejs;
+  await fs.writeFile(paths.join(src, 'index.ts'), indexTemplate);
 }
 
-export async function runCreateProgram({path, name, quiet }: CreateProgramOptions) {
+export async function runCreateProgram({path, name, testRunner, quiet }: CreateProgramOptions) {
   await fs.mkdir(path, { recursive: true });
   const packageName = name ?? paths.basename(paths.resolve(path));
   const originalPackageJson = await readPackageJson(path);
+
+  const baseDevDependencies = {
+    '@tsconfig/node24': 'latest',
+    '@types/node': 'latest',
+    'typescript': 'latest'
+  }
+  const jestDevDependencies = {
+    'jest': 'latest',
+    'ts-jest': 'latest',
+    'typescript': 'latest',
+    '@types/jest': 'latest'
+  };
+  const devDependencies =  {
+    ...baseDevDependencies,
+    ...(testRunner === 'jest' ? jestDevDependencies : {}),
+  }
+
+  const testScript = testRunner === 'jest' ? 'jest' : 'node --experimental-strip-types --test src/**/*.test.ts';
+
   const packageJson = {
     name: packageName,
     bin: `bin/${packageName}.mjs`,
     main: 'build/index.js',
     type: 'module',
-    devDependencies: {
-      '@tsconfig/node24': 'latest',
-      '@types/jest': 'latest',
-      '@types/node': 'latest',
-      'jest': 'latest',
-      'ts-jest': 'latest',
-      'typescript': 'latest'
-    },
+    devDependencies,
     scripts: {
-      test: 'jest',
+      test: testScript,
       build: 'tsc -p tsconfig.json',
     },
     ...originalPackageJson,
   };
   await writePackageJson(path, packageJson);
-  await writeSourceFiles(path);
+  await writeSourceFiles(path, testRunner);
   await modifyGitIgnore(path);
-  await writeOtherConfigFiles(path);
+  await writeOtherConfigFiles(path, testRunner);
   await writeBin(path, packageName);
   if (!quiet) {
     if (path === '.') {

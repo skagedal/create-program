@@ -6,7 +6,7 @@
   "bin": "bin/create-program.mjs",
   "type": "module",
   "devDependencies": {
-    "@tsconfig/node21": "^21.0.3",
+    "@tsconfig/node24": "^24",
     "@tsconfig/strictest": "^2.0.5",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.2",

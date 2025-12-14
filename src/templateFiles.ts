@@ -10,8 +10,16 @@ import { main } from '../build/src/index.js'
 main();
 `;
 
-export const indexTs =
+export const indexTsJest =
 `import { greet } from './greet.js';
+
+export function main() {
+  console.log(greet({ name: 'world' }));
+}
+`;
+
+export const indexTsNodejs =
+`import { greet } from './greet.ts';
 
 export function main() {
   console.log(greet({ name: 'world' }));
@@ -29,7 +37,7 @@ export function greet(greetable: Greetable) {
 }
 `;
 
-export const greetTestTs = 
+export const greetTestTsJest =
 `import { greet } from "./greet.js";
 
 describe('greeting', () => {
@@ -43,11 +51,27 @@ describe('greeting', () => {
 });
 `;
 
+export const greetTestTsNodejs =
+`import { describe, it } from 'node:test';
+import assert from 'node:assert';
+import { greet } from "./greet.ts";
+
+describe('greeting', () => {
+  it('should greet with name', () => {
+    assert.strictEqual(greet({ name: 'world' }), 'Hello, world!');
+  });
+
+  it('should handle birthday greetings', () => {
+    assert.strictEqual(greet({ name: 'world', isBirthday: true }), 'Happy birthday, world!');
+  });
+});
+`;
+
 export const tsConfig =
 `{
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": [
-    "@tsconfig/node21/tsconfig.json"
+    "@tsconfig/node24/tsconfig.json"
   ],
   "compilerOptions": {
     "outDir": "build",

@@ -3,7 +3,16 @@
  */
 
 import * as c from 'cmd-ts';
-import { runCreateProgram } from './createProgram.js';
+import { runCreateProgram, TestRunner } from './createProgram.js';
+
+const testRunnerType: c.Type<string, TestRunner> = {
+  async from(str) {
+    if (str === 'jest' || str === 'nodejs') {
+      return str;
+    }
+    throw new Error(`Invalid test runner: ${str}. Must be 'jest' or 'nodejs'.`);
+  },
+};
 
 async function mainAsync() {
   const cmd = c.command({
@@ -21,6 +30,13 @@ async function mainAsync() {
         long: 'name',
         description: 'the name of the program',
         type: c.optional(c.string),
+      }),
+      testRunner: c.option({
+        long: 'test-runner',
+        description: 'the test framework to use (jest or nodejs)',
+        type: testRunnerType,
+        defaultValue: () => 'jest' as TestRunner,
+        defaultValueIsSerializable: true,
       }),
       quiet: c.flag({
         long: 'quiet',
