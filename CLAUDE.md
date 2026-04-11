@@ -4,32 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a scaffolding tool (`create-program`) that generates TypeScript Node.js projects with ESM, Jest testing, and build configuration. It's published as an npm initializer package (invoked via `npm create program@latest`).
+This is a scaffolding tool (`create-program`) that generates TypeScript Node.js projects with ESM, Node.js built-in test runner, and build configuration. It's published as an npm initializer package (invoked via `npm create program@latest`).
 
 ## Common Commands
 
 ### Testing
 ```bash
-npm test              # Run all tests with Jest
-npm test -- <file>    # Run a specific test file
+pnpm run build && pnpm test   # Build then run all tests
+pnpm test                      # Run tests (requires prior build)
 ```
 
 ### Building
 ```bash
-npm run build         # Compile TypeScript to build/ directory
+pnpm run build         # Compile TypeScript to build/ directory
 ```
 
 ### Development Workflow
 After making changes, run both:
 ```bash
-npm run build && npm test
+pnpm run build && pnpm test
 ```
 
 ### Testing the Tool Locally
 To test the scaffolding tool in a temporary directory:
 ```bash
 mkdir /tmp/test-project
-npm run build
+pnpm run build
 node bin/create-program.mjs --path /tmp/test-project
 ```
 
@@ -62,7 +62,7 @@ node bin/create-program.mjs --path /tmp/test-project
 
 ### Build Configuration
 - TypeScript builds from `src/` and `__tests__/` to `build/`
-- Uses `@tsconfig/node21` as base config
+- Uses `@tsconfig/node24` as base config
 - Outputs ES modules with source maps
 
 ### Important Patterns

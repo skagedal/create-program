@@ -118,8 +118,8 @@ export async function runCreateProgram({path, name, testRunner, quiet }: CreateP
       console.log(`Program created in ${path}, go there and run:`);
     }
     console.log('');
-    console.log('   npm install');
-    console.log('   npm run build');
-    console.log(`   npm exec ${packageName}`);
+    console.log('   pnpm install');
+    console.log('   pnpm run build');
+    console.log(`   pnpm exec ${packageName}`);
   }
 }

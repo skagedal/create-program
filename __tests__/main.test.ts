@@ -1,11 +1,14 @@
 import fs from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import * as paths from 'path';
+import * as paths from 'node:path';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { runCreateProgram } from '../src/createProgram.js';
 
+// When compiled to build/__tests__/, fixtures live two levels up at __tests__/__fixtures__/
 const resolveFromFixture = (relativePath: string) =>
-  paths.resolve(__dirname, '__fixtures__', relativePath);
+  paths.resolve(import.meta.dirname, '../../__tests__/__fixtures__', relativePath);
 
 const createTempDir = async () => await fs.mkdtemp(join(tmpdir(), 'test-'));
 
@@ -27,7 +30,7 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'jest', quiet: true});
 
     const packageJson = await readPackageJson(path);
-    expect(packageJson.name).toBe('three');
+    assert.strictEqual(packageJson.name, 'three');
   });
 
   it('should write package name to package.json when no package.json', async () => {
@@ -36,7 +39,7 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'jest', quiet: true});
 
     const packageJson = await readPackageJson(path);
-    expect(packageJson.name).toBe('no-package-json');
+    assert.strictEqual(packageJson.name, 'no-package-json');
   });
 
   it('should write package name to package.json when package.json exists but has no name', async () => {
@@ -45,8 +48,8 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'jest', quiet: true});
 
     const packageJson = await readPackageJson(path);
-    expect(packageJson.name).toBe('has-no-name');
-    expect(packageJson.dummy).toBe('retained-value');
+    assert.strictEqual(packageJson.name, 'has-no-name');
+    assert.strictEqual(packageJson.dummy, 'retained-value');
   });
 
   it('should not overwrite existing name in package.json', async () => {
@@ -55,7 +58,7 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'jest', quiet: true});
 
     const packageJson = await readPackageJson(path);
-    expect(packageJson.name).toBe('existing-name');
+    assert.strictEqual(packageJson.name, 'existing-name');
   });
 
   it('should create bin/has-no-name.mjs', async () => {
@@ -64,7 +67,7 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'jest', quiet: true});
 
     const indexMjs = await fs.readFile(join(path, 'bin', 'has-no-name.mjs'), 'utf8');
-    expect(indexMjs).toMatch(/.*/);
+    assert.ok(indexMjs.length > 0);
   });
 
   it('should add relevant things to package.json', async () => {
@@ -73,15 +76,15 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'jest', quiet: true});
 
     const packageJson = await readPackageJson(path);
-    expect(packageJson.main).toBe('build/index.js');
-    expect(packageJson.bin).toBe('bin/has-no-name.mjs');
-    expect(packageJson.type).toBe('module');
-    expect(Object.keys(packageJson.devDependencies)).toContain('typescript');
-    expect(Object.keys(packageJson.devDependencies)).toContain('jest');
-    expect(Object.keys(packageJson.devDependencies)).toContain('ts-jest');
-    expect(Object.keys(packageJson.devDependencies)).toContain('@types/node');
-    expect(Object.keys(packageJson.devDependencies)).toContain('@types/jest');
-    expect(packageJson.scripts.test).toBe('jest');
+    assert.strictEqual(packageJson.main, 'build/index.js');
+    assert.strictEqual(packageJson.bin, 'bin/has-no-name.mjs');
+    assert.strictEqual(packageJson.type, 'module');
+    assert.ok(Object.keys(packageJson.devDependencies).includes('typescript'));
+    assert.ok(Object.keys(packageJson.devDependencies).includes('jest'));
+    assert.ok(Object.keys(packageJson.devDependencies).includes('ts-jest'));
+    assert.ok(Object.keys(packageJson.devDependencies).includes('@types/node'));
+    assert.ok(Object.keys(packageJson.devDependencies).includes('@types/jest'));
+    assert.strictEqual(packageJson.scripts.test, 'jest');
   });
 
   it('should be fine when things already exist', async () => {
@@ -96,12 +99,12 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'nodejs', quiet: true});
 
     const packageJson = await readPackageJson(path);
-    expect(packageJson.scripts.test).toBe('node --experimental-strip-types --test src/**/*.test.ts');
-    expect(Object.keys(packageJson.devDependencies)).not.toContain('jest');
-    expect(Object.keys(packageJson.devDependencies)).not.toContain('ts-jest');
-    expect(Object.keys(packageJson.devDependencies)).not.toContain('@types/jest');
-    expect(Object.keys(packageJson.devDependencies)).toContain('typescript');
-    expect(Object.keys(packageJson.devDependencies)).toContain('@types/node');
+    assert.strictEqual(packageJson.scripts.test, 'node --experimental-strip-types --test src/**/*.test.ts');
+    assert.ok(!Object.keys(packageJson.devDependencies).includes('jest'));
+    assert.ok(!Object.keys(packageJson.devDependencies).includes('ts-jest'));
+    assert.ok(!Object.keys(packageJson.devDependencies).includes('@types/jest'));
+    assert.ok(Object.keys(packageJson.devDependencies).includes('typescript'));
+    assert.ok(Object.keys(packageJson.devDependencies).includes('@types/node'));
   });
 
   it('should not create jest.config.mjs when using nodejs test runner', async () => {
@@ -109,7 +112,7 @@ describe('main', () => {
 
     await runCreateProgram({path, testRunner: 'nodejs', quiet: true});
 
-    await expect(fs.access(join(path, 'jest.config.mjs'))).rejects.toThrow();
+    await assert.rejects(() => fs.access(join(path, 'jest.config.mjs')));
   });
 
   it('should create test file with node:test imports when using nodejs test runner', async () => {
@@ -118,9 +121,9 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'nodejs', quiet: true});
 
     const testFile = await fs.readFile(join(path, 'src', 'greet.test.ts'), 'utf8');
-    expect(testFile).toContain("import { describe, it } from 'node:test'");
-    expect(testFile).toContain("import assert from 'node:assert'");
-    expect(testFile).toContain('from "./greet.ts"');
+    assert.ok(testFile.includes("import { describe, it } from 'node:test'"));
+    assert.ok(testFile.includes("import assert from 'node:assert'"));
+    assert.ok(testFile.includes('from "./greet.ts"'));
   });
 
   it('should use .ts extension in imports when using nodejs test runner', async () => {
@@ -129,7 +132,6 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'nodejs', quiet: true});
 
     const indexFile = await fs.readFile(join(path, 'src', 'index.ts'), 'utf8');
-    expect(indexFile).toContain("from './greet.ts'");
+    assert.ok(indexFile.includes("from './greet.ts'"));
   });
 });
-

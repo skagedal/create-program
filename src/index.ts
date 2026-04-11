@@ -35,7 +35,7 @@ async function mainAsync() {
         long: 'test-runner',
         description: 'the test framework to use (jest or nodejs)',
         type: testRunnerType,
-        defaultValue: () => 'jest' as TestRunner,
+        defaultValue: () => 'nodejs' as TestRunner,
         defaultValueIsSerializable: true,
       }),
       quiet: c.flag({
