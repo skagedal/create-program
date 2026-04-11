@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { main } from '../build/src/index.js'
+import { main } from '../src/index.ts'
 
 main();

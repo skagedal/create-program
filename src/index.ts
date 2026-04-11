@@ -3,7 +3,7 @@
  */
 
 import * as c from 'cmd-ts';
-import { runCreateProgram, TestRunner } from './createProgram.js';
+import { runCreateProgram, type TestRunner } from './createProgram.ts';
 
 const testRunnerType: c.Type<string, TestRunner> = {
   async from(str) {

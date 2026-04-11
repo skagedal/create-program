@@ -76,9 +76,12 @@ export const tsConfig =
   "compilerOptions": {
     "outDir": "build",
     "rootDir": ".",
-    "sourceMap": true
+    "sourceMap": true,
+    "rewriteRelativeImportExtensions": true,
+    "types": ["node"]
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["**/*.test.ts"]
 }
 `;
 

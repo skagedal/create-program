@@ -4,10 +4,18 @@
 
 import * as fs from 'fs/promises'
 import * as paths from 'node:path';
-import * as templateFiles from './templateFiles.js';
-import { readLinesFromFile, writeLinesToFile } from './fileProcessing.js';
+import * as templateFiles from './templateFiles.ts';
+import { readLinesFromFile, writeLinesToFile } from './fileProcessing.ts';
 
 export type TestRunner = 'jest' | 'nodejs';
+export type PackageManager = 'npm' | 'pnpm' | 'yarn';
+
+export function detectPackageManager(): PackageManager {
+  const userAgent = process.env.npm_config_user_agent ?? '';
+  if (userAgent.startsWith('pnpm/')) return 'pnpm';
+  if (userAgent.startsWith('yarn/')) return 'yarn';
+  return 'npm';
+}
 
 export interface CreateProgramOptions {
   path: string;
@@ -91,12 +99,12 @@ export async function runCreateProgram({path, name, testRunner, quiet }: CreateP
     ...(testRunner === 'jest' ? jestDevDependencies : {}),
   }
 
-  const testScript = testRunner === 'jest' ? 'jest' : 'node --experimental-strip-types --test src/**/*.test.ts';
+  const testScript = testRunner === 'jest' ? 'jest' : 'node --test src/**/*.test.ts';
 
   const packageJson = {
     name: packageName,
     bin: `bin/${packageName}.mjs`,
-    main: 'build/index.js',
+    main: 'build/src/index.js',
     type: 'module',
     devDependencies,
     scripts: {
@@ -111,15 +119,18 @@ export async function runCreateProgram({path, name, testRunner, quiet }: CreateP
   await writeOtherConfigFiles(path, testRunner);
   await writeBin(path, packageName);
   if (!quiet) {
+    const pm = detectPackageManager();
+    const install = pm === 'yarn' ? 'yarn' : `${pm} install`;
+    const build = pm === 'yarn' ? 'yarn build' : `${pm} run build`;
+    const exec = `${pm} exec ${packageName}`;
     if (path === '.') {
       console.log('Program created, now run:');
-    }
-    if (path !== '.') {
+    } else {
       console.log(`Program created in ${path}, go there and run:`);
     }
     console.log('');
-    console.log('   pnpm install');
-    console.log('   pnpm run build');
-    console.log(`   pnpm exec ${packageName}`);
+    console.log(`   ${install}`);
+    console.log(`   ${build}`);
+    console.log(`   ${exec}`);
   }
 }

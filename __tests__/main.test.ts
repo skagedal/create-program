@@ -2,13 +2,16 @@ import fs from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import * as paths from 'node:path';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { runCreateProgram } from '../src/createProgram.js';
+import { runCreateProgram } from '../src/createProgram.ts';
 
-// When compiled to build/__tests__/, fixtures live two levels up at __tests__/__fixtures__/
+const execAsync = promisify(exec);
+
 const resolveFromFixture = (relativePath: string) =>
-  paths.resolve(import.meta.dirname, '../../__tests__/__fixtures__', relativePath);
+  paths.resolve(import.meta.dirname, '__fixtures__', relativePath);
 
 const createTempDir = async () => await fs.mkdtemp(join(tmpdir(), 'test-'));
 
@@ -76,7 +79,7 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'jest', quiet: true});
 
     const packageJson = await readPackageJson(path);
-    assert.strictEqual(packageJson.main, 'build/index.js');
+    assert.strictEqual(packageJson.main, 'build/src/index.js');
     assert.strictEqual(packageJson.bin, 'bin/has-no-name.mjs');
     assert.strictEqual(packageJson.type, 'module');
     assert.ok(Object.keys(packageJson.devDependencies).includes('typescript'));
@@ -99,7 +102,7 @@ describe('main', () => {
     await runCreateProgram({path, testRunner: 'nodejs', quiet: true});
 
     const packageJson = await readPackageJson(path);
-    assert.strictEqual(packageJson.scripts.test, 'node --experimental-strip-types --test src/**/*.test.ts');
+    assert.strictEqual(packageJson.scripts.test, 'node --test src/**/*.test.ts');
     assert.ok(!Object.keys(packageJson.devDependencies).includes('jest'));
     assert.ok(!Object.keys(packageJson.devDependencies).includes('ts-jest'));
     assert.ok(!Object.keys(packageJson.devDependencies).includes('@types/jest'));
@@ -133,5 +136,17 @@ describe('main', () => {
 
     const indexFile = await fs.readFile(join(path, 'src', 'index.ts'), 'utf8');
     assert.ok(indexFile.includes("from './greet.ts'"));
+  });
+});
+
+describe('integration', () => {
+  const packageRoot = paths.resolve(import.meta.dirname, '..');
+
+  it('scaffolded project installs and builds successfully', { timeout: 120000 }, async () => {
+    const tmpDir = await createTempDir();
+
+    await execAsync(`pnpm dlx "${packageRoot}" --quiet`, { cwd: tmpDir });
+    await execAsync('pnpm install', { cwd: tmpDir });
+    await execAsync('pnpm run build', { cwd: tmpDir });
   });
 });
