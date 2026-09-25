@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+# Update every dependency in the repo: package-lock.json, within the ranges
+# in package.json, and the pinned actions in .github/workflows.
+#
+# No manifest is written. package.json carries ranges a human put there, so
+# the lock file moves underneath them and crossing a major bound stays a
+# manual edit. The actions have no lock file of their own — there the pinned
+# version *is* the range, so pinact moves them across majors too.
+
+# Both commands below act on the current directory, so the script has to be
+# somewhere known rather than wherever it was called from.
+cd "$(dirname "$0")/.." || exit 1
+
+npm update
+
+# Pin the actions in .github/workflows to commit SHAs and move them forward,
+# honouring the three-day min_age in .pinact.yaml. Exit 1 means pinact found
+# something to pin and 2 that something needs a person to decide, neither of
+# which should fail this script — finding something to pin is the point of
+# running it, and the caller reads the working tree to see what happened.
+#
+# Unauthenticated GitHub API calls are capped at 60 an hour, which one run
+# can get through, so lend it the gh token when there is one.
+if [[ -z "${PINACT_GITHUB_TOKEN:-}" && -z "${GITHUB_TOKEN:-}" ]] &&
+    command -v gh >/dev/null 2>&1; then
+    PINACT_GITHUB_TOKEN="$(gh auth token 2>/dev/null || true)"
+    [[ -n "$PINACT_GITHUB_TOKEN" ]] && export PINACT_GITHUB_TOKEN
+fi
+pinact run --update || echo "pinact exited $?, see above"
